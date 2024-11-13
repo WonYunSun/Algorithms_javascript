@@ -1,3 +1,5 @@
 function solution(numbers) {
-    return (45 - numbers.reduce((acc, curr) => acc + curr));
+    const oneToNine = 45;
+    const numbersSum = numbers.reduce((acc, num) => acc + num, 0);
+    return oneToNine - numbersSum;
 }
