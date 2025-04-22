@@ -1,8 +1,7 @@
 function solution(fees, records) {
   const [defaultTime, defaultFee, unitTime, unitFee] = fees;
-  const timeTable = {}; //차량번호와 시간을 담을 것
-  const timeTable2 = []; //요금 결과
-  const answer = [];
+  const timeTable = {}; //차량 별 누적 시간 중간 계산
+  const totalParkingTime = []; //최종 누적 시간
   records.forEach((record) => {
     const [time, number, type] = record.split(" ");
 
@@ -22,34 +21,21 @@ function solution(fees, records) {
       if (typeof timeTable[car][timeTable[car].length - 1] === "string") {
         timeTable[car][timeTable[car].length - 1] = timeDiff(timeTable[car].pop(), "23:59");
       }
-
       const total = timeTable[car].reduce((acc, cur) => {
         return acc + cur;
       }, 0);
 
-      timeTable2.push(total);
+      totalParkingTime.push(total);
     });
 
-  Object.values(timeTable2).forEach((val) => {
-    if (val <= defaultTime) {
-      answer.push(defaultFee);
-    } else {
-      const fee = defaultFee + Math.ceil((val - defaultTime) / unitTime) * unitFee;
-      answer.push(fee);
-    }
+  return totalParkingTime.map((acc) => {
+    if (acc <= defaultTime) return defaultFee;
+    return defaultFee + Math.ceil((acc - defaultTime) / unitTime) * unitFee;
   });
-
-  return Object.values(answer);
 }
 
-const timeDiff = (time1, time2) => {
-  const [hour1, minute1] = time1.split(":").map(Number);
-  const [hour2, minute2] = time2.split(":").map(Number);
-
-  const time1InMinutes = hour1 * 60 + minute1;
-  const time2InMinutes = hour2 * 60 + minute2;
-
-  const diff = Math.abs(time2InMinutes - time1InMinutes);
-
-  return diff;
-};
+function timeDiff(start, end) {
+  const [h1, m1] = start.split(":").map(Number);
+  const [h2, m2] = end.split(":").map(Number);
+  return h2 * 60 + m2 - (h1 * 60 + m1);
+}
